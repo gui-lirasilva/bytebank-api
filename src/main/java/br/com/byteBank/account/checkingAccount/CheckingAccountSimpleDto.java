@@ -1,6 +1,5 @@
 package br.com.byteBank.account.checkingAccount;
 
-import br.com.byteBank.client.ClientDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,15 +11,15 @@ import java.math.BigDecimal;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CheckingAccountDto {
+public class CheckingAccountSimpleDto {
 
     private Long id;
-    private ClientDto client;
+    private Long clientId;
     private BigDecimal balance;
 
-    public CheckingAccountDto(CheckingAccount account) {
+    public CheckingAccountSimpleDto(CheckingAccount account) {
         this.id = account.getId();
-        this.client = new ClientDto(account.getClient());
+        this.clientId = account.getClient().getId();
         this.balance = account.getBalance();
     }
 }

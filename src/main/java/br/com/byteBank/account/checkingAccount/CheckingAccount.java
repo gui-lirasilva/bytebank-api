@@ -37,16 +37,20 @@ public class CheckingAccount extends Account {
 
     @Override
     public void transfer(BigDecimal value, Account account) {
-        try{
-            if(balance.doubleValue() >= value.doubleValue()) {
-                balance = balance.subtract(value.add(BigDecimal.valueOf(0.5)));
-                account.recieve(value);
-            } else {
-                throw new IllegalArgumentException();
-            }
-        } catch (IllegalArgumentException ignored) {
-
+        if(balance.doubleValue() < value.doubleValue()) {
+            throw new IllegalArgumentException();
         }
+        balance = balance.subtract(value.add(BigDecimal.valueOf(0.5)));
+        account.recieve(value);
+    }
+
+    @Override
+    public void pix(BigDecimal value, Account account) {
+        if(balance.doubleValue() < value.doubleValue()) {
+            throw new IllegalArgumentException();
+        }
+        balance = balance.subtract(value);
+        account.recieve(value);
     }
 
     @Override
@@ -54,17 +58,8 @@ public class CheckingAccount extends Account {
         balance = balance.add(value);
     }
 
-    @Override
-    public void pix(BigDecimal value, Account account) {
-        try{
-            if(balance.doubleValue() >= value.doubleValue()) {
-                balance = balance.subtract(value);
-                account.recieve(value);
-            } else {
-                throw new IllegalArgumentException();
-            }
-        } catch (IllegalArgumentException ignored) {
-
-        }
+    public void update(CheckingAccountFormDto formDto) {
+        this.balance = formDto.getBalance();
+        this.client = formDto.getClient();
     }
 }

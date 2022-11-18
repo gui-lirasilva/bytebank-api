@@ -4,9 +4,9 @@ import br.com.byteBank.client.Client;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import javax.validation.Valid;
 import java.util.List;
 
 @Service
@@ -15,18 +15,22 @@ public class CheckingAccountService {
 
     private final CheckingAccountRepository checkingAccountRepository;
 
-    public List<CheckingAccountDto> listAllCheckingAccounts(Pageable pageable) {
-        return checkingAccountRepository.findAll(pageable).stream().map(CheckingAccountDto::new).toList();
+    public List<CheckingAccountSimpleDto> listAllCheckingAccounts(Pageable pageable) {
+        return checkingAccountRepository.findAll(pageable).stream().map(CheckingAccountSimpleDto::new).toList();
     }
 
-//    public Page<CheckingAccount> listAllCheckingAccounts(Pageable pageable) {
-//        return checkingAccountRepository.findAll(pageable);
-//    }
+    @Transactional
+    public CheckingAccountSimpleDto create(CheckingAccountFormDto formDto) {
+        CheckingAccount checkingAccount = checkingAccountRepository.save(formDto.toEntity());
+        return new CheckingAccountSimpleDto(checkingAccount);
+    }
 
-    public CheckingAccountDto insertCheckingAccount(@Valid CheckingAccountFormDto formDto) {
-        CheckingAccount checkingAccount = checkingAccountRepository
-                .save(new CheckingAccount(formDto.getClient(), formDto.getBalance()));
-        return new CheckingAccountDto(checkingAccount);
+    @Transactional
+    public CheckingAccountSimpleDto updateAccount(Long id, CheckingAccountFormDto formDto) {
+        CheckingAccount checkingAccount = checkingAccountRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        checkingAccount.update(formDto);
+        checkingAccountRepository.save(checkingAccount);
+        return new CheckingAccountSimpleDto(checkingAccount);
     }
 
     public CheckingAccountDto findCheckingAccountByClient(Client client) {

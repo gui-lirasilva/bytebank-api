@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 @Getter
@@ -15,10 +14,13 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CheckingAccountFormDto {
-
-    @NotNull
     private Client client;
+    private Long clientId;
 
     @DecimalMin("0.0")
     private BigDecimal balance;
+
+    public CheckingAccount toEntity() {
+        return new CheckingAccount(client, balance);
+    }
 }
