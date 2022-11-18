@@ -10,6 +10,8 @@ import java.util.Optional;
 
 public interface ClientRepository extends JpaRepository<Client, Long> {
 
+    public Optional<Client> findByCpf(String cpf);
+
     @Query(value = """
     SELECT * FROM SavingsAccount sa WHERE sa.client_id = :#{#client.id}
     """, nativeQuery = true)

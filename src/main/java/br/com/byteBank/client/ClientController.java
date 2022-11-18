@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.net.URI;
 import java.util.List;
 
@@ -24,9 +26,21 @@ public class ClientController {
     }
 
     @PostMapping("/new")
-    public ResponseEntity<Client> create(@RequestBody @Valid ClientFormDto formDto, UriComponentsBuilder uriComponentsBuilder) {
-        Client client = clientService.create(formDto);
+    public ResponseEntity<ClientDto> create(@RequestBody @Valid ClientFormDto formDto, UriComponentsBuilder uriComponentsBuilder) {
+        ClientDto client = clientService.create(formDto);
         URI uri = uriComponentsBuilder.path("/client/{id}").buildAndExpand(client.getId()).toUri();
         return ResponseEntity.created(uri).body(client);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ClientDto> update(@PathVariable @NotNull @Min(1) Long id, @RequestBody @Valid ClientFormDto formDto) {
+        ClientDto client = clientService.updateClient(id, formDto);
+        return ResponseEntity.ok(client);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ClientDto> delete(@PathVariable @NotNull @Min(1) Long id) {
+        clientService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

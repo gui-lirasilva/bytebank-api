@@ -42,4 +42,13 @@ public class Client {
         this.address = address;
         this.email = email;
     }
+
+    public void update(ClientFormDto formDto) {
+        this.name = formDto.getName();
+        this.birthDay = formDto.getBirthDay();
+        this.cpf = formDto.getCpf();
+        this.profession = formDto.getProfession();
+        this.address = formDto.getAddress();
+        this.email = formDto.getEmail();
+    }
 }
