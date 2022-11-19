@@ -1,36 +1,40 @@
 package br.com.byteBank.account.savingsAccount;
 
-import br.com.byteBank.client.Client;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import javax.validation.Valid;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class SavingsAccountService {
 
-    @Autowired
-    private SavingsAccountRepository savingsAccountRepository;
+    private final SavingsAccountRepository savingsAccountRepository;
 
-    public List<SavingsAccountDto> listAllSavingsAccounts() {
-        return savingsAccountRepository.findAll().stream().map(SavingsAccountDto::new).toList();
+    public List<SavingsAccountSimpleDto> listAllSavingsAccounts(Pageable pageable) {
+        return savingsAccountRepository.findAll(pageable).stream().map(SavingsAccountSimpleDto::new).toList();
     }
 
-    public SavingsAccountDto insertSavingAccount(@Valid SavingsAccountFormDto formDto) {
-        SavingsAccount savingsAccount = savingsAccountRepository
-                .save(new SavingsAccount(formDto.getClient(), formDto.getBalance()));
-        return new SavingsAccountDto(savingsAccount);
+    @Transactional
+    public SavingsAccountSimpleDto create(SavingsAccountFormDto formDto) {
+        SavingsAccount savingsAccount = savingsAccountRepository.save(formDto.toEntity());
+        return new SavingsAccountSimpleDto(savingsAccount);
     }
 
-    public SavingsAccountDto findSavingsAccountByClient(Client client) {
-        SavingsAccount savingsAccount = savingsAccountRepository.findByClient(client)
-                .orElseThrow(EntityNotFoundException::new);
-        return new SavingsAccountDto(savingsAccount);
+    @Transactional
+    public SavingsAccountSimpleDto updateAccount(Long id, SavingsAccountFormDto formDto) {
+        SavingsAccount savingsAccount = savingsAccountRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        savingsAccount.update(formDto);
+        savingsAccountRepository.save(savingsAccount);
+        return new SavingsAccountSimpleDto(savingsAccount);
     }
 
-    public void deleteCheckingAccount(Long id) {
+
+    @Transactional
+    public void deleteSavingsAccount(Long id) {
         savingsAccountRepository.deleteById(id);
     }
 }

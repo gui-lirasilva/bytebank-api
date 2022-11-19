@@ -1,9 +1,6 @@
 package br.com.byteBank.account.checkingAccount;
 
-import br.com.byteBank.client.Client;
-import br.com.byteBank.client.ClientDto;
-import br.com.byteBank.client.ClientFormDto;
-import br.com.byteBank.client.ClientRepository;
+import br.com.byteBank.client.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -25,7 +22,7 @@ import java.util.List;
 public class CheckingAccountController {
 
     private final CheckingAccountService checkingAccountService;
-    private final ClientRepository clientRepository;
+    private final ClientService clientService;
 
     @GetMapping
     public List<CheckingAccountSimpleDto> list(@PageableDefault(size = 10) Pageable pageable){
@@ -35,10 +32,10 @@ public class CheckingAccountController {
     @PostMapping("/new")
     @Transactional
     public ResponseEntity<CheckingAccountSimpleDto> create(@RequestBody @Valid CheckingAccountFormDto formDto, UriComponentsBuilder uriComponentsBuilder) {
-        if(clientRepository.findById(formDto.getClientId()).isEmpty()) {
+        if(clientService.clientNotExists(formDto.getClientId())) {
             throw new IllegalArgumentException("The client not exists");
         }
-        Client client = clientRepository.findById(formDto.getClientId()).get();
+        Client client = clientService.findById(formDto.getClientId()).orElseThrow(EntityNotFoundException::new);
         formDto.setClient(client);
         CheckingAccountSimpleDto account = checkingAccountService.create(formDto);
         URI uri = uriComponentsBuilder.path("/account/checking/{id}").buildAndExpand(account.getId()).toUri();
@@ -47,10 +44,11 @@ public class CheckingAccountController {
 
     @PutMapping("/{id}")
     public ResponseEntity<CheckingAccountSimpleDto> update(@PathVariable @NotNull @Min(1) Long id, @RequestBody @Valid CheckingAccountFormDto formDto) {
-        if(clientRepository.findById(formDto.getClientId()).isEmpty()) {
+        if(clientService.clientNotExists(formDto.getClientId())) {
             throw new IllegalArgumentException("The client not exists");
         }
-        formDto.setClient(clientRepository.findById(formDto.getClientId()).get());
+        Client client = clientService.findById(formDto.getClientId()).orElseThrow(EntityNotFoundException::new);
+        formDto.setClient(client);
         CheckingAccountSimpleDto account = checkingAccountService.updateAccount(id, formDto);
         return ResponseEntity.ok(account);
     }

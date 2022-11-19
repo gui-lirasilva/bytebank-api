@@ -1,6 +1,7 @@
 package br.com.byteBank.account.savingsAccount;
 
 import br.com.byteBank.account.Account;
+import br.com.byteBank.account.checkingAccount.CheckingAccountFormDto;
 import br.com.byteBank.client.Client;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,16 +34,11 @@ public class SavingsAccount extends Account {
 
     @Override
     public void transfer(BigDecimal value, Account account) {
-        try{
-            if(balance.doubleValue() >= value.doubleValue()) {
-                balance = balance.subtract(value.add(BigDecimal.valueOf(1.0)));
-                account.recieve(value);
-            } else {
-                throw new IllegalArgumentException();
-            }
-        } catch (IllegalArgumentException ignored) {
-
+        if(balance.doubleValue() < value.doubleValue()) {
+            throw new IllegalArgumentException();
         }
+        balance = balance.subtract(value.add(BigDecimal.valueOf(1.0)));
+        account.recieve(value);
     }
 
     @Override
@@ -52,15 +48,15 @@ public class SavingsAccount extends Account {
 
     @Override
     public void pix(BigDecimal value, Account account) {
-        try{
-            if(balance.doubleValue() >= value.doubleValue()) {
-                balance = balance.subtract(value);
-                account.recieve(value);
-            } else {
-                throw new IllegalArgumentException();
-            }
-        } catch (IllegalArgumentException ignored) {
-
+        if(balance.doubleValue() >= value.doubleValue()) {
+            throw new IllegalArgumentException();
         }
+        balance = balance.subtract(value);
+        account.recieve(value);
+    }
+
+    public void update(SavingsAccountFormDto formDto) {
+        this.balance = formDto.getBalance();
+        this.client = formDto.getClient();
     }
 }

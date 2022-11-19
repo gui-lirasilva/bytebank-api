@@ -33,15 +33,15 @@ public class CheckingAccountService {
         return new CheckingAccountSimpleDto(checkingAccount);
     }
 
+
+    @Transactional
+    public void deleteCheckingAccount(Long id) {
+        checkingAccountRepository.deleteById(id);
+    }
+
     public CheckingAccountDto findCheckingAccountByClient(Client client) {
         CheckingAccount checkingAccount = checkingAccountRepository.findByClient(client)
                 .orElseThrow(EntityNotFoundException::new);
         return new CheckingAccountDto(checkingAccount);
     }
-
-    public void deleteCheckingAccount(Long id) {
-        checkingAccountRepository.deleteById(id);
-    }
-
-
 }

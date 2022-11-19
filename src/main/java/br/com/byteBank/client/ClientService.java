@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -16,6 +17,11 @@ public class ClientService {
 
     public List<ClientDto> listAllClients(Pageable pageable) {
         return clientRepository.findAll(pageable).stream().map(ClientDto::new).toList();
+    }
+
+    public boolean clientNotExists(Long id) {
+        Optional<Client> possibleClient = clientRepository.findById(id);
+        return possibleClient.isEmpty();
     }
 
     @Transactional
@@ -38,5 +44,9 @@ public class ClientService {
     @Transactional
     public void delete(Long id) {
         clientRepository.deleteById(id);
+    }
+
+    public Optional<Client> findById(Long clientId) {
+        return clientRepository.findById(clientId);
     }
 }

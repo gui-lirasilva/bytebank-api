@@ -1,28 +1,25 @@
 package br.com.byteBank.account.savingsAccount;
 
-import br.com.byteBank.client.Client;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class SavingsAccountFormDto {
+public class SavingsAccountSimpleDto {
 
-    private Client client;
+    private Long id;
     private Long clientId;
-
-    @DecimalMin("0.0")
     private BigDecimal balance;
 
-    public SavingsAccount toEntity() {
-        return new SavingsAccount(client, balance);
+    public SavingsAccountSimpleDto(SavingsAccount account) {
+        this.id = account.getId();
+        this.clientId = account.getClient().getId();
+        this.balance = account.getBalance();
     }
 }
