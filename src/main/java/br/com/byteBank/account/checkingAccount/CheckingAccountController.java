@@ -1,11 +1,12 @@
 package br.com.byteBank.account.checkingAccount;
 
-import br.com.byteBank.client.*;
+import br.com.byteBank.account.TransferInfo;
+import br.com.byteBank.client.Client;
+import br.com.byteBank.client.ClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -30,7 +31,6 @@ public class CheckingAccountController {
     }
 
     @PostMapping("/new")
-    @Transactional
     public ResponseEntity<CheckingAccountSimpleDto> create(@RequestBody @Valid CheckingAccountFormDto formDto, UriComponentsBuilder uriComponentsBuilder) {
         if(clientService.clientNotExists(formDto.getClientId())) {
             throw new IllegalArgumentException("The client not exists");
@@ -57,6 +57,17 @@ public class CheckingAccountController {
     public ResponseEntity<CheckingAccountSimpleDto> delete(@PathVariable @NotNull @Min(1) Long id) {
         checkingAccountService.deleteCheckingAccount(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/transfer")
+    public ResponseEntity<CheckingAccountSimpleDto> transfer(@PathVariable @NotNull @Min(1) Long id,
+                                                             @RequestBody @Valid TransferInfo transferInfo) {
+        if(checkingAccountService.accountNotExists(id) || checkingAccountService.accountNotExists(transferInfo.getDestinationId())) {
+            throw new IllegalArgumentException("The account not exists");
+        }
+        checkingAccountService.transfer(id, transferInfo);
+        CheckingAccountSimpleDto simpleDto = new CheckingAccountSimpleDto(checkingAccountService.findAccountById(id).get());
+        return ResponseEntity.ok(simpleDto);
     }
 
 }

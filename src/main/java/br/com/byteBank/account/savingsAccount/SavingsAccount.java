@@ -1,7 +1,6 @@
 package br.com.byteBank.account.savingsAccount;
 
 import br.com.byteBank.account.Account;
-import br.com.byteBank.account.checkingAccount.CheckingAccountFormDto;
 import br.com.byteBank.client.Client;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,6 +24,8 @@ public class SavingsAccount extends Account {
     @OneToOne
     @JoinColumn(name = "client_id")
     private Client client;
+
+    @Column(name = "balance")
     private BigDecimal balance;
 
     public SavingsAccount(Client client, BigDecimal balance) {
@@ -44,15 +45,6 @@ public class SavingsAccount extends Account {
     @Override
     public void recieve(BigDecimal value) {
         balance = balance.add(value);
-    }
-
-    @Override
-    public void pix(BigDecimal value, Account account) {
-        if(balance.doubleValue() >= value.doubleValue()) {
-            throw new IllegalArgumentException();
-        }
-        balance = balance.subtract(value);
-        account.recieve(value);
     }
 
     public void update(SavingsAccountFormDto formDto) {

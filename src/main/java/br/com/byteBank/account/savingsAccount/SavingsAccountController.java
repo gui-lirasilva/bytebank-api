@@ -44,6 +44,7 @@ public class SavingsAccountController {
     }
 
     @PutMapping("/{id}")
+    @Transactional
     public ResponseEntity<SavingsAccountSimpleDto> update(@PathVariable @NotNull @Min(1) Long id, @RequestBody @Valid SavingsAccountFormDto formDto) {
         if(clientService.clientNotExists(formDto.getClientId())) {
             throw new IllegalArgumentException("The client not exists");
@@ -55,6 +56,7 @@ public class SavingsAccountController {
     }
 
     @DeleteMapping("/{id}")
+    @Transactional
     public ResponseEntity<SavingsAccountSimpleDto> delete(@PathVariable @NotNull @Min(1) Long id) {
         savingsAccountService.deleteSavingsAccount(id);
         return ResponseEntity.noContent().build();

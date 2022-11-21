@@ -1,11 +1,13 @@
 package br.com.byteBank.client;
 
+import br.com.byteBank.account.checkingAccount.CheckingAccount;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 

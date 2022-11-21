@@ -6,5 +6,4 @@ public abstract class Account {
 
     public abstract void transfer(BigDecimal value, Account account);
     public abstract void recieve(BigDecimal value);
-    public abstract void pix(BigDecimal value, Account account);
 }

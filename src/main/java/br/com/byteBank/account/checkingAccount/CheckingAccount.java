@@ -45,15 +45,6 @@ public class CheckingAccount extends Account {
     }
 
     @Override
-    public void pix(BigDecimal value, Account account) {
-        if(balance.doubleValue() < value.doubleValue()) {
-            throw new IllegalArgumentException();
-        }
-        balance = balance.subtract(value);
-        account.recieve(value);
-    }
-
-    @Override
     public void recieve(BigDecimal value) {
         balance = balance.add(value);
     }
