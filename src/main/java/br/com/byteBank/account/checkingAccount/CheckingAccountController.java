@@ -1,6 +1,8 @@
 package br.com.byteBank.account.checkingAccount;
 
+import br.com.byteBank.account.AccountType;
 import br.com.byteBank.account.TransferInfo;
+import br.com.byteBank.account.savingsAccount.SavingsAccountService;
 import br.com.byteBank.client.Client;
 import br.com.byteBank.client.ClientService;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ import java.util.List;
 public class CheckingAccountController {
 
     private final CheckingAccountService checkingAccountService;
+    private final SavingsAccountService savingsAccountService;
     private final ClientService clientService;
 
     @GetMapping
@@ -62,8 +65,14 @@ public class CheckingAccountController {
     @PostMapping("/{id}/transfer")
     public ResponseEntity<CheckingAccountSimpleDto> transfer(@PathVariable @NotNull @Min(1) Long id,
                                                              @RequestBody @Valid TransferInfo transferInfo) {
-        if(checkingAccountService.accountNotExists(id) || checkingAccountService.accountNotExists(transferInfo.getDestinationId())) {
+        if(checkingAccountService.accountNotExists(id)) {
             throw new IllegalArgumentException("The account not exists");
+        }
+        if(transferInfo.getAccountType() == AccountType.SAVINGS && savingsAccountService.accountNotExists(transferInfo.getDestinationId())) {
+            throw new IllegalArgumentException("The destination not exists");
+        }
+        if(transferInfo.getAccountType() == AccountType.CHECKING && checkingAccountService.accountNotExists(transferInfo.getDestinationId())) {
+            throw new IllegalArgumentException("The destination not exists");
         }
         checkingAccountService.transfer(id, transferInfo);
         CheckingAccountSimpleDto simpleDto = new CheckingAccountSimpleDto(checkingAccountService.findAccountById(id).get());
