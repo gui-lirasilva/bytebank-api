@@ -2,6 +2,7 @@ package br.com.byteBank.account.checkingAccount;
 
 import br.com.byteBank.account.AccountType;
 import br.com.byteBank.account.TransferInfo;
+import br.com.byteBank.account.checkingAccount.dto.CheckingAccountDto;
 import br.com.byteBank.account.checkingAccount.dto.CheckingAccountFormDto;
 import br.com.byteBank.account.checkingAccount.dto.CheckingAccountSimpleDto;
 import br.com.byteBank.account.savingsAccount.SavingsAccountService;
@@ -33,6 +34,12 @@ public class CheckingAccountController {
     @GetMapping
     public List<CheckingAccountSimpleDto> list(@PageableDefault(size = 10) Pageable pageable){
         return checkingAccountService.listAllCheckingAccounts(pageable);
+    }
+
+    @GetMapping("/detail/{id}")
+    public CheckingAccountDto detail(@PathVariable @NotNull @Min(1) Long id) {
+        CheckingAccount checkingAccount = checkingAccountService.findAccountById(id).orElseThrow(EntityNotFoundException::new);
+        return new CheckingAccountDto(checkingAccount);
     }
 
     @PostMapping("/new")
@@ -73,11 +80,10 @@ public class CheckingAccountController {
         if(checkingAccountService.accountNotExists(id)) {
             throw new IllegalArgumentException("The account not exists");
         }
-        if(transferInfo.getAccountType() == AccountType.SAVINGS && savingsAccountService.accountNotExists(transferInfo.getDestinationId())) {
-            throw new IllegalArgumentException("The destination not exists");
-        }
-        if(transferInfo.getAccountType() == AccountType.CHECKING && checkingAccountService.accountNotExists(transferInfo.getDestinationId())) {
-            throw new IllegalArgumentException("The destination not exists");
+        if(transferInfo.getAccountType() == AccountType.CHECKING) {
+            if(checkingAccountService.findAccountById(id).get().getId() == transferInfo.getDestinationId()) {
+                throw new IllegalArgumentException("Illegal transaction for same account");
+            }
         }
         checkingAccountService.transfer(id, transferInfo);
         CheckingAccountSimpleDto simpleDto = new CheckingAccountSimpleDto(checkingAccountService.findAccountById(id).get());

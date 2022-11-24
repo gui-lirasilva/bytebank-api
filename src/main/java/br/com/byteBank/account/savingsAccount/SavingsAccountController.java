@@ -2,7 +2,10 @@ package br.com.byteBank.account.savingsAccount;
 
 import br.com.byteBank.account.AccountType;
 import br.com.byteBank.account.TransferInfo;
+import br.com.byteBank.account.checkingAccount.CheckingAccount;
 import br.com.byteBank.account.checkingAccount.CheckingAccountService;
+import br.com.byteBank.account.checkingAccount.dto.CheckingAccountDto;
+import br.com.byteBank.account.savingsAccount.dto.SavingsAccountDto;
 import br.com.byteBank.account.savingsAccount.dto.SavingsAccountFormDto;
 import br.com.byteBank.account.savingsAccount.dto.SavingsAccountSimpleDto;
 import br.com.byteBank.client.Client;
@@ -33,6 +36,12 @@ public class SavingsAccountController {
     @GetMapping
     public List<SavingsAccountSimpleDto> list(@PageableDefault(size = 10) Pageable pageable){
         return savingsAccountService.listAllSavingsAccounts(pageable);
+    }
+
+    @GetMapping("/detail/{id}")
+    public SavingsAccountDto detail(@PathVariable @NotNull @Min(1) Long id) {
+        SavingsAccount savingsAccount = savingsAccountService.findAccountById(id).orElseThrow(EntityNotFoundException::new);
+        return new SavingsAccountDto(savingsAccount);
     }
 
     @PostMapping("/new")
@@ -73,11 +82,10 @@ public class SavingsAccountController {
         if(savingsAccountService.accountNotExists(id)) {
             throw new IllegalArgumentException("The account not exists");
         }
-        if(transferInfo.getAccountType() == AccountType.SAVINGS && savingsAccountService.accountNotExists(transferInfo.getDestinationId())) {
-            throw new IllegalArgumentException("The destination not exists");
-        }
-        if(transferInfo.getAccountType() == AccountType.CHECKING && checkingAccountService.accountNotExists(transferInfo.getDestinationId())) {
-            throw new IllegalArgumentException("The destination not exists");
+        if(transferInfo.getAccountType() == AccountType.SAVINGS) {
+            if(savingsAccountService.findAccountById(id).get().getId() == transferInfo.getDestinationId()) {
+                throw new IllegalArgumentException("Illegal transaction for same account");
+            }
         }
 
         savingsAccountService.transfer(id, transferInfo);

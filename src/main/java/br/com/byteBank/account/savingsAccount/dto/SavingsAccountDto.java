@@ -1,7 +1,7 @@
 package br.com.byteBank.account.savingsAccount.dto;
 
 import br.com.byteBank.account.savingsAccount.SavingsAccount;
-import br.com.byteBank.client.Client;
+import br.com.byteBank.client.dto.ClientDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,11 +16,12 @@ import java.math.BigDecimal;
 public class SavingsAccountDto {
 
     private Long id;
-    private Client client;
+    private ClientDto client;
     private BigDecimal balance;
 
     public SavingsAccountDto(SavingsAccount account) {
-        this.client = account.getClient();
+        this.id = account.getId();
+        this.client = new ClientDto(account.getClient());
         this.balance = account.getBalance();
     }
 }
