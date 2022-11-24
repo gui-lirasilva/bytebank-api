@@ -40,6 +40,9 @@ public class CheckingAccountController {
         if(clientService.clientNotExists(formDto.getClientId())) {
             throw new IllegalArgumentException("The client not exists");
         }
+        if (clientService.findCheckingAccount(formDto.getClientId()).isPresent()) {
+            throw new IllegalArgumentException("This client already have an checking account");
+        }
         Client client = clientService.findById(formDto.getClientId()).orElseThrow(EntityNotFoundException::new);
         formDto.setClient(client);
         CheckingAccountSimpleDto account = checkingAccountService.create(formDto);

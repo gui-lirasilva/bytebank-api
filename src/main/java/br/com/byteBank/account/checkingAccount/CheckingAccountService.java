@@ -8,6 +8,7 @@ import br.com.byteBank.account.checkingAccount.dto.CheckingAccountSimpleDto;
 import br.com.byteBank.account.savingsAccount.SavingsAccount;
 import br.com.byteBank.account.savingsAccount.SavingsAccountRepository;
 import br.com.byteBank.client.Client;
+import br.com.byteBank.client.ClientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class CheckingAccountService {
 
     private final CheckingAccountRepository checkingAccountRepository;
     private final SavingsAccountRepository savingsAccountRepository;
+    private final ClientRepository clientRepository;
 
     public List<CheckingAccountSimpleDto> listAllCheckingAccounts(Pageable pageable) {
         return checkingAccountRepository.findAll(pageable).stream().map(CheckingAccountSimpleDto::new).toList();
@@ -74,11 +76,5 @@ public class CheckingAccountService {
             savingsAccountRepository.save(destinationAccount);
         }
 
-    }
-
-    public CheckingAccountDto findCheckingAccountByClient(Client client) {
-        CheckingAccount checkingAccount = checkingAccountRepository.findByClient(client)
-                .orElseThrow(EntityNotFoundException::new);
-        return new CheckingAccountDto(checkingAccount);
     }
 }

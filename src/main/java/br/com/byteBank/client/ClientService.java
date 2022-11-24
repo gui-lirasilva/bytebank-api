@@ -1,5 +1,7 @@
 package br.com.byteBank.client;
 
+import br.com.byteBank.account.checkingAccount.CheckingAccount;
+import br.com.byteBank.account.savingsAccount.SavingsAccount;
 import br.com.byteBank.client.dto.ClientDto;
 import br.com.byteBank.client.dto.ClientFormDto;
 import lombok.RequiredArgsConstructor;
@@ -19,11 +21,6 @@ public class ClientService {
 
     public List<ClientDto> listAllClients(Pageable pageable) {
         return clientRepository.findAll(pageable).stream().map(ClientDto::new).toList();
-    }
-
-    public boolean clientNotExists(Long id) {
-        Optional<Client> possibleClient = clientRepository.findById(id);
-        return possibleClient.isEmpty();
     }
 
     @Transactional
@@ -50,5 +47,20 @@ public class ClientService {
 
     public Optional<Client> findById(Long clientId) {
         return clientRepository.findById(clientId);
+    }
+
+    public boolean clientNotExists(Long id) {
+        Optional<Client> possibleClient = clientRepository.findById(id);
+        return possibleClient.isEmpty();
+    }
+
+    public Optional<SavingsAccount> findSavingsAccount(Long clientId) {
+        Optional<Client> client = clientRepository.findById(clientId);
+        return clientRepository.findSavingsAccountByClient(client.get());
+    }
+
+    public Optional<CheckingAccount> findCheckingAccount(Long clientId) {
+        Optional<Client> client = clientRepository.findById(clientId);
+        return clientRepository.findCheckingAccountByClient(client.get());
     }
 }
