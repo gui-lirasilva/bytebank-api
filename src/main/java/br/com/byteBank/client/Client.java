@@ -1,5 +1,6 @@
 package br.com.byteBank.client;
 
+import br.com.byteBank.client.dto.ClientFormDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

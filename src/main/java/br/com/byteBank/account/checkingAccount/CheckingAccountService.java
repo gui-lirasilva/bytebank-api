@@ -2,9 +2,11 @@ package br.com.byteBank.account.checkingAccount;
 
 import br.com.byteBank.account.AccountType;
 import br.com.byteBank.account.TransferInfo;
+import br.com.byteBank.account.checkingAccount.dto.CheckingAccountDto;
+import br.com.byteBank.account.checkingAccount.dto.CheckingAccountFormDto;
+import br.com.byteBank.account.checkingAccount.dto.CheckingAccountSimpleDto;
 import br.com.byteBank.account.savingsAccount.SavingsAccount;
 import br.com.byteBank.account.savingsAccount.SavingsAccountRepository;
-import br.com.byteBank.account.savingsAccount.SavingsAccountService;
 import br.com.byteBank.client.Client;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -12,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 

@@ -1,5 +1,6 @@
-package br.com.byteBank.account.checkingAccount;
+package br.com.byteBank.account.checkingAccount.dto;
 
+import br.com.byteBank.account.checkingAccount.CheckingAccount;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

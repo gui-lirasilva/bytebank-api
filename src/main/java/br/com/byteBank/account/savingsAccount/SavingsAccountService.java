@@ -4,6 +4,8 @@ import br.com.byteBank.account.AccountType;
 import br.com.byteBank.account.TransferInfo;
 import br.com.byteBank.account.checkingAccount.CheckingAccount;
 import br.com.byteBank.account.checkingAccount.CheckingAccountRepository;
+import br.com.byteBank.account.savingsAccount.dto.SavingsAccountFormDto;
+import br.com.byteBank.account.savingsAccount.dto.SavingsAccountSimpleDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

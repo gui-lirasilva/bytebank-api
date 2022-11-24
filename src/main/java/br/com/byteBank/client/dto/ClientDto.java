@@ -1,5 +1,6 @@
-package br.com.byteBank.client;
+package br.com.byteBank.client.dto;
 
+import br.com.byteBank.client.Client;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

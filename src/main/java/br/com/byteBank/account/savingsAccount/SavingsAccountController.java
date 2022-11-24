@@ -3,14 +3,14 @@ package br.com.byteBank.account.savingsAccount;
 import br.com.byteBank.account.AccountType;
 import br.com.byteBank.account.TransferInfo;
 import br.com.byteBank.account.checkingAccount.CheckingAccountService;
-import br.com.byteBank.account.checkingAccount.CheckingAccountSimpleDto;
+import br.com.byteBank.account.savingsAccount.dto.SavingsAccountFormDto;
+import br.com.byteBank.account.savingsAccount.dto.SavingsAccountSimpleDto;
 import br.com.byteBank.client.Client;
 import br.com.byteBank.client.ClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 

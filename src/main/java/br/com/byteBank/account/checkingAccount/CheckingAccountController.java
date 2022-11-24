@@ -2,6 +2,8 @@ package br.com.byteBank.account.checkingAccount;
 
 import br.com.byteBank.account.AccountType;
 import br.com.byteBank.account.TransferInfo;
+import br.com.byteBank.account.checkingAccount.dto.CheckingAccountFormDto;
+import br.com.byteBank.account.checkingAccount.dto.CheckingAccountSimpleDto;
 import br.com.byteBank.account.savingsAccount.SavingsAccountService;
 import br.com.byteBank.client.Client;
 import br.com.byteBank.client.ClientService;

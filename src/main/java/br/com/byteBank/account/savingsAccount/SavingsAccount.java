@@ -1,6 +1,7 @@
 package br.com.byteBank.account.savingsAccount;
 
 import br.com.byteBank.account.Account;
+import br.com.byteBank.account.savingsAccount.dto.SavingsAccountFormDto;
 import br.com.byteBank.client.Client;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
