@@ -5,7 +5,6 @@ import br.com.byteBank.account.TransferInfo;
 import br.com.byteBank.account.checkingAccount.dto.CheckingAccountDto;
 import br.com.byteBank.account.checkingAccount.dto.CheckingAccountFormDto;
 import br.com.byteBank.account.checkingAccount.dto.CheckingAccountSimpleDto;
-import br.com.byteBank.account.savingsAccount.SavingsAccountService;
 import br.com.byteBank.client.Client;
 import br.com.byteBank.client.ClientService;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +27,6 @@ import java.util.List;
 public class CheckingAccountController {
 
     private final CheckingAccountService checkingAccountService;
-    private final SavingsAccountService savingsAccountService;
     private final ClientService clientService;
 
     @GetMapping

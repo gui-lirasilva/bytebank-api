@@ -2,9 +2,6 @@ package br.com.byteBank.account.savingsAccount;
 
 import br.com.byteBank.account.AccountType;
 import br.com.byteBank.account.TransferInfo;
-import br.com.byteBank.account.checkingAccount.CheckingAccount;
-import br.com.byteBank.account.checkingAccount.CheckingAccountService;
-import br.com.byteBank.account.checkingAccount.dto.CheckingAccountDto;
 import br.com.byteBank.account.savingsAccount.dto.SavingsAccountDto;
 import br.com.byteBank.account.savingsAccount.dto.SavingsAccountFormDto;
 import br.com.byteBank.account.savingsAccount.dto.SavingsAccountSimpleDto;
@@ -30,7 +27,6 @@ import java.util.List;
 public class SavingsAccountController {
 
     private final SavingsAccountService savingsAccountService;
-    private final CheckingAccountService checkingAccountService;
     private final ClientService clientService;
 
     @GetMapping
