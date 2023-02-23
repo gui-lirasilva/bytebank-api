@@ -20,6 +20,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.net.URI;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/account/savings")
@@ -41,7 +42,8 @@ public class SavingsAccountController {
     }
 
     @PostMapping("/new")
-    public ResponseEntity<SavingsAccountSimpleDto> create(@RequestBody @Valid SavingsAccountFormDto formDto, UriComponentsBuilder uriComponentsBuilder) {
+    public ResponseEntity<SavingsAccountSimpleDto> create(@RequestBody @Valid SavingsAccountFormDto formDto,
+                                                          UriComponentsBuilder uriComponentsBuilder) {
         if(clientService.clientNotExists(formDto.getClientId())) {
             throw new IllegalArgumentException("The client not exists");
         }
@@ -56,7 +58,8 @@ public class SavingsAccountController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<SavingsAccountSimpleDto> update(@PathVariable @NotNull @Min(1) Long id, @RequestBody @Valid SavingsAccountFormDto formDto) {
+    public ResponseEntity<SavingsAccountSimpleDto> update(@PathVariable @NotNull @Min(1) Long id,
+                                                          @RequestBody @Valid SavingsAccountFormDto formDto) {
         if(clientService.clientNotExists(formDto.getClientId())) {
             throw new IllegalArgumentException("The client not exists");
         }
@@ -78,14 +81,17 @@ public class SavingsAccountController {
         if(savingsAccountService.accountNotExists(id)) {
             throw new IllegalArgumentException("The account not exists");
         }
+
+        SavingsAccount savingsAccount = savingsAccountService.findAccountById(id).get();
+
         if(transferInfo.getAccountType() == AccountType.SAVINGS) {
-            if(savingsAccountService.findAccountById(id).get().getId() == transferInfo.getDestinationId()) {
+            if(Objects.equals(savingsAccount.getId(), transferInfo.getDestinationId())) {
                 throw new IllegalArgumentException("Illegal transaction for same account");
             }
         }
 
         savingsAccountService.transfer(id, transferInfo);
-        SavingsAccountSimpleDto simpleDto = new SavingsAccountSimpleDto(savingsAccountService.findAccountById(id).get());
+        SavingsAccountSimpleDto simpleDto = new SavingsAccountSimpleDto(savingsAccount);
         return ResponseEntity.ok(simpleDto);
     }
 }

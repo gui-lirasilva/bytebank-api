@@ -20,6 +20,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.net.URI;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/account/checking")
@@ -41,7 +42,8 @@ public class CheckingAccountController {
     }
 
     @PostMapping("/new")
-    public ResponseEntity<CheckingAccountSimpleDto> create(@RequestBody @Valid CheckingAccountFormDto formDto, UriComponentsBuilder uriComponentsBuilder) {
+    public ResponseEntity<CheckingAccountSimpleDto> create(@RequestBody @Valid CheckingAccountFormDto formDto,
+                                                           UriComponentsBuilder uriComponentsBuilder) {
         if(clientService.clientNotExists(formDto.getClientId())) {
             throw new IllegalArgumentException("The client not exists");
         }
@@ -56,7 +58,8 @@ public class CheckingAccountController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CheckingAccountSimpleDto> update(@PathVariable @NotNull @Min(1) Long id, @RequestBody @Valid CheckingAccountFormDto formDto) {
+    public ResponseEntity<CheckingAccountSimpleDto> update(@PathVariable @NotNull @Min(1) Long id,
+                                                           @RequestBody @Valid CheckingAccountFormDto formDto) {
         if(clientService.clientNotExists(formDto.getClientId())) {
             throw new IllegalArgumentException("The client not exists");
         }
@@ -78,13 +81,16 @@ public class CheckingAccountController {
         if(checkingAccountService.accountNotExists(id)) {
             throw new IllegalArgumentException("The account not exists");
         }
+
+        CheckingAccount checkingAccount = checkingAccountService.findAccountById(id).get();
+
         if(transferInfo.getAccountType() == AccountType.CHECKING) {
-            if(checkingAccountService.findAccountById(id).get().getId() == transferInfo.getDestinationId()) {
+            if(Objects.equals(checkingAccount.getId(), transferInfo.getDestinationId())) {
                 throw new IllegalArgumentException("Illegal transaction for same account");
             }
         }
         checkingAccountService.transfer(id, transferInfo);
-        CheckingAccountSimpleDto simpleDto = new CheckingAccountSimpleDto(checkingAccountService.findAccountById(id).get());
+        CheckingAccountSimpleDto simpleDto = new CheckingAccountSimpleDto(checkingAccount);
         return ResponseEntity.ok(simpleDto);
     }
 
