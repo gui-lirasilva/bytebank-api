@@ -4,7 +4,7 @@ import br.com.byteBank.account.AccountType;
 import br.com.byteBank.account.TransferInfo;
 import br.com.byteBank.account.savingsAccount.dto.SavingsAccountDto;
 import br.com.byteBank.account.savingsAccount.dto.SavingsAccountFormDto;
-import br.com.byteBank.account.savingsAccount.dto.SavingsAccountSimpleDto;
+import br.com.byteBank.account.AccountSimpleDto;
 import br.com.byteBank.client.Client;
 import br.com.byteBank.client.ClientService;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,7 @@ public class SavingsAccountController {
     private final ClientService clientService;
 
     @GetMapping
-    public List<SavingsAccountSimpleDto> list(@PageableDefault(size = 10) Pageable pageable){
+    public List<AccountSimpleDto> list(@PageableDefault(size = 10) Pageable pageable){
         return savingsAccountService.listAllSavingsAccounts(pageable);
     }
 
@@ -42,8 +42,8 @@ public class SavingsAccountController {
     }
 
     @PostMapping("/new")
-    public ResponseEntity<SavingsAccountSimpleDto> create(@RequestBody @Valid SavingsAccountFormDto formDto,
-                                                          UriComponentsBuilder uriComponentsBuilder) {
+    public ResponseEntity<AccountSimpleDto> create(@RequestBody @Valid SavingsAccountFormDto formDto,
+                                                   UriComponentsBuilder uriComponentsBuilder) {
         if(clientService.clientNotExists(formDto.getClientId())) {
             throw new IllegalArgumentException("The client not exists");
         }
@@ -52,46 +52,46 @@ public class SavingsAccountController {
         }
         Client client = clientService.findById(formDto.getClientId()).orElseThrow(EntityNotFoundException::new);
         formDto.setClient(client);
-        SavingsAccountSimpleDto account = savingsAccountService.create(formDto);
+        AccountSimpleDto account = savingsAccountService.create(formDto);
         URI uri = uriComponentsBuilder.path("/account/savings/{id}").buildAndExpand(account.getId()).toUri();
         return ResponseEntity.created(uri).body(account);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<SavingsAccountSimpleDto> update(@PathVariable @NotNull @Min(1) Long id,
-                                                          @RequestBody @Valid SavingsAccountFormDto formDto) {
+    public ResponseEntity<AccountSimpleDto> update(@PathVariable @NotNull @Min(1) Long id,
+                                                   @RequestBody @Valid SavingsAccountFormDto formDto) {
         if(clientService.clientNotExists(formDto.getClientId())) {
             throw new IllegalArgumentException("The client not exists");
         }
         Client client = clientService.findById(formDto.getClientId()).orElseThrow(EntityNotFoundException::new);
         formDto.setClient(client);
-        SavingsAccountSimpleDto account = savingsAccountService.updateAccount(id, formDto);
+        AccountSimpleDto account = savingsAccountService.updateAccount(id, formDto);
         return ResponseEntity.ok(account);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<SavingsAccountSimpleDto> delete(@PathVariable @NotNull @Min(1) Long id) {
+    public ResponseEntity<AccountSimpleDto> delete(@PathVariable @NotNull @Min(1) Long id) {
         savingsAccountService.deleteSavingsAccount(id);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{id}/transfer")
-    public ResponseEntity<SavingsAccountSimpleDto> transfer(@PathVariable @NotNull @Min(1) Long id,
-                                                             @RequestBody @Valid TransferInfo transferInfo) {
+    public ResponseEntity<AccountSimpleDto> transfer(@PathVariable @NotNull @Min(1) Long id,
+                                                     @RequestBody @Valid TransferInfo transferInfo) {
         if(savingsAccountService.accountNotExists(id)) {
             throw new IllegalArgumentException("The account not exists");
         }
 
         SavingsAccount savingsAccount = savingsAccountService.findAccountById(id).get();
 
-        if(transferInfo.getAccountType() == AccountType.SAVINGS) {
+        if(transferInfo.getDestinationAccountType() == AccountType.SAVINGS) {
             if(Objects.equals(savingsAccount.getId(), transferInfo.getDestinationId())) {
                 throw new IllegalArgumentException("Illegal transaction for same account");
             }
         }
 
         savingsAccountService.transfer(id, transferInfo);
-        SavingsAccountSimpleDto simpleDto = new SavingsAccountSimpleDto(savingsAccount);
+        AccountSimpleDto simpleDto = new AccountSimpleDto(savingsAccount);
         return ResponseEntity.ok(simpleDto);
     }
 }

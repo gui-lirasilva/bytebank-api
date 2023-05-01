@@ -1,14 +1,11 @@
 package br.com.byteBank.account.checkingAccount;
 
+import br.com.byteBank.account.AccountSimpleDto;
 import br.com.byteBank.account.AccountType;
 import br.com.byteBank.account.TransferInfo;
-import br.com.byteBank.account.checkingAccount.dto.CheckingAccountDto;
 import br.com.byteBank.account.checkingAccount.dto.CheckingAccountFormDto;
-import br.com.byteBank.account.checkingAccount.dto.CheckingAccountSimpleDto;
 import br.com.byteBank.account.savingsAccount.SavingsAccount;
 import br.com.byteBank.account.savingsAccount.SavingsAccountRepository;
-import br.com.byteBank.client.Client;
-import br.com.byteBank.client.ClientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,24 +21,23 @@ public class CheckingAccountService {
 
     private final CheckingAccountRepository checkingAccountRepository;
     private final SavingsAccountRepository savingsAccountRepository;
-    private final ClientRepository clientRepository;
 
-    public List<CheckingAccountSimpleDto> listAllCheckingAccounts(Pageable pageable) {
-        return checkingAccountRepository.findAll(pageable).stream().map(CheckingAccountSimpleDto::new).toList();
+    public List<AccountSimpleDto> listAllCheckingAccounts(Pageable pageable) {
+        return checkingAccountRepository.findAll(pageable).stream().map(AccountSimpleDto::new).toList();
     }
 
     @Transactional
-    public CheckingAccountSimpleDto create(CheckingAccountFormDto formDto) {
+    public AccountSimpleDto create(CheckingAccountFormDto formDto) {
         CheckingAccount checkingAccount = checkingAccountRepository.save(formDto.toEntity());
-        return new CheckingAccountSimpleDto(checkingAccount);
+        return new AccountSimpleDto(checkingAccount);
     }
 
     @Transactional
-    public CheckingAccountSimpleDto updateAccount(Long id, CheckingAccountFormDto formDto) {
+    public AccountSimpleDto updateAccount(Long id, CheckingAccountFormDto formDto) {
         CheckingAccount checkingAccount = checkingAccountRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         checkingAccount.update(formDto);
         checkingAccountRepository.save(checkingAccount);
-        return new CheckingAccountSimpleDto(checkingAccount);
+        return new AccountSimpleDto(checkingAccount);
     }
 
 
@@ -62,7 +58,7 @@ public class CheckingAccountService {
     @Transactional
     public void transfer(Long id, TransferInfo transferInfo) {
         CheckingAccount account = checkingAccountRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        if (transferInfo.getAccountType() == AccountType.CHECKING) {
+        if (transferInfo.getDestinationAccountType() == AccountType.CHECKING) {
             CheckingAccount destinationAccount = checkingAccountRepository.findById(transferInfo.getDestinationId())
                     .orElseThrow(EntityNotFoundException::new);
             account.transfer(transferInfo.getValue(), destinationAccount);
@@ -76,5 +72,13 @@ public class CheckingAccountService {
             savingsAccountRepository.save(destinationAccount);
         }
 
+    }
+
+    @Transactional
+    public void deposit(TransferInfo transferInfo) {
+        CheckingAccount account = checkingAccountRepository.findById(transferInfo.getDestinationId())
+                .orElseThrow(EntityNotFoundException::new);
+        account.recieve(transferInfo.getValue());
+        checkingAccountRepository.save(account);
     }
 }

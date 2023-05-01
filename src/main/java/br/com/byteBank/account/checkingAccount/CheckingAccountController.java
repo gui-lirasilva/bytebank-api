@@ -1,10 +1,10 @@
 package br.com.byteBank.account.checkingAccount;
 
+import br.com.byteBank.account.AccountSimpleDto;
 import br.com.byteBank.account.AccountType;
 import br.com.byteBank.account.TransferInfo;
 import br.com.byteBank.account.checkingAccount.dto.CheckingAccountDto;
 import br.com.byteBank.account.checkingAccount.dto.CheckingAccountFormDto;
-import br.com.byteBank.account.checkingAccount.dto.CheckingAccountSimpleDto;
 import br.com.byteBank.client.Client;
 import br.com.byteBank.client.ClientService;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,7 @@ public class CheckingAccountController {
     private final ClientService clientService;
 
     @GetMapping
-    public List<CheckingAccountSimpleDto> list(@PageableDefault(size = 10) Pageable pageable){
+    public List<AccountSimpleDto> list(@PageableDefault(size = 10) Pageable pageable){
         return checkingAccountService.listAllCheckingAccounts(pageable);
     }
 
@@ -42,7 +42,7 @@ public class CheckingAccountController {
     }
 
     @PostMapping("/new")
-    public ResponseEntity<CheckingAccountSimpleDto> create(@RequestBody @Valid CheckingAccountFormDto formDto,
+    public ResponseEntity<AccountSimpleDto> create(@RequestBody @Valid CheckingAccountFormDto formDto,
                                                            UriComponentsBuilder uriComponentsBuilder) {
         if(clientService.clientNotExists(formDto.getClientId())) {
             throw new IllegalArgumentException("The client not exists");
@@ -52,31 +52,31 @@ public class CheckingAccountController {
         }
         Client client = clientService.findById(formDto.getClientId()).orElseThrow(EntityNotFoundException::new);
         formDto.setClient(client);
-        CheckingAccountSimpleDto account = checkingAccountService.create(formDto);
+        AccountSimpleDto account = checkingAccountService.create(formDto);
         URI uri = uriComponentsBuilder.path("/account/checking/{id}").buildAndExpand(account.getId()).toUri();
         return ResponseEntity.created(uri).body(account);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CheckingAccountSimpleDto> update(@PathVariable @NotNull @Min(1) Long id,
+    public ResponseEntity<AccountSimpleDto> update(@PathVariable @NotNull @Min(1) Long id,
                                                            @RequestBody @Valid CheckingAccountFormDto formDto) {
         if(clientService.clientNotExists(formDto.getClientId())) {
             throw new IllegalArgumentException("The client not exists");
         }
         Client client = clientService.findById(formDto.getClientId()).orElseThrow(EntityNotFoundException::new);
         formDto.setClient(client);
-        CheckingAccountSimpleDto account = checkingAccountService.updateAccount(id, formDto);
+        AccountSimpleDto account = checkingAccountService.updateAccount(id, formDto);
         return ResponseEntity.ok(account);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<CheckingAccountSimpleDto> delete(@PathVariable @NotNull @Min(1) Long id) {
+    public ResponseEntity<AccountSimpleDto> delete(@PathVariable @NotNull @Min(1) Long id) {
         checkingAccountService.deleteCheckingAccount(id);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{id}/transfer")
-    public ResponseEntity<CheckingAccountSimpleDto> transfer(@PathVariable @NotNull @Min(1) Long id,
+    public ResponseEntity<AccountSimpleDto> transfer(@PathVariable @NotNull @Min(1) Long id,
                                                              @RequestBody @Valid TransferInfo transferInfo) {
         if(checkingAccountService.accountNotExists(id)) {
             throw new IllegalArgumentException("The account not exists");
@@ -84,13 +84,13 @@ public class CheckingAccountController {
 
         CheckingAccount checkingAccount = checkingAccountService.findAccountById(id).get();
 
-        if(transferInfo.getAccountType() == AccountType.CHECKING) {
+        if(transferInfo.getDestinationAccountType() == AccountType.CHECKING) {
             if(Objects.equals(checkingAccount.getId(), transferInfo.getDestinationId())) {
                 throw new IllegalArgumentException("Illegal transaction for same account");
             }
         }
         checkingAccountService.transfer(id, transferInfo);
-        CheckingAccountSimpleDto simpleDto = new CheckingAccountSimpleDto(checkingAccount);
+        AccountSimpleDto simpleDto = new AccountSimpleDto(checkingAccount);
         return ResponseEntity.ok(simpleDto);
     }
 

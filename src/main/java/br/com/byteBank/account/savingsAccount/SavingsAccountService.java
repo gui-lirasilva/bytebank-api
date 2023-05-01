@@ -5,7 +5,7 @@ import br.com.byteBank.account.TransferInfo;
 import br.com.byteBank.account.checkingAccount.CheckingAccount;
 import br.com.byteBank.account.checkingAccount.CheckingAccountRepository;
 import br.com.byteBank.account.savingsAccount.dto.SavingsAccountFormDto;
-import br.com.byteBank.account.savingsAccount.dto.SavingsAccountSimpleDto;
+import br.com.byteBank.account.AccountSimpleDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,22 +22,22 @@ public class SavingsAccountService {
     private final SavingsAccountRepository savingsAccountRepository;
     private final CheckingAccountRepository checkingAccountRepository;
 
-    public List<SavingsAccountSimpleDto> listAllSavingsAccounts(Pageable pageable) {
-        return savingsAccountRepository.findAll(pageable).stream().map(SavingsAccountSimpleDto::new).toList();
+    public List<AccountSimpleDto> listAllSavingsAccounts(Pageable pageable) {
+        return savingsAccountRepository.findAll(pageable).stream().map(AccountSimpleDto::new).toList();
     }
 
     @Transactional
-    public SavingsAccountSimpleDto create(SavingsAccountFormDto formDto) {
+    public AccountSimpleDto create(SavingsAccountFormDto formDto) {
         SavingsAccount savingsAccount = savingsAccountRepository.save(formDto.toEntity());
-        return new SavingsAccountSimpleDto(savingsAccount);
+        return new AccountSimpleDto(savingsAccount);
     }
 
     @Transactional
-    public SavingsAccountSimpleDto updateAccount(Long id, SavingsAccountFormDto formDto) {
+    public AccountSimpleDto updateAccount(Long id, SavingsAccountFormDto formDto) {
         SavingsAccount savingsAccount = savingsAccountRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         savingsAccount.update(formDto);
         savingsAccountRepository.save(savingsAccount);
-        return new SavingsAccountSimpleDto(savingsAccount);
+        return new AccountSimpleDto(savingsAccount);
     }
 
     @Transactional
@@ -57,7 +57,7 @@ public class SavingsAccountService {
     @Transactional
     public void transfer(Long id, TransferInfo transferInfo) {
         SavingsAccount account = savingsAccountRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        if (transferInfo.getAccountType() == AccountType.SAVINGS) {
+        if (transferInfo.getDestinationAccountType() == AccountType.SAVINGS) {
             SavingsAccount destinationAccount = savingsAccountRepository.findById(transferInfo.getDestinationId())
                     .orElseThrow(EntityNotFoundException::new);
             account.transfer(transferInfo.getValue(), destinationAccount);
@@ -70,5 +70,13 @@ public class SavingsAccountService {
             savingsAccountRepository.save(account);
             checkingAccountRepository.save(destinationAccount);
         }
+    }
+
+    @Transactional
+    public void deposit(TransferInfo transferInfo) {
+        SavingsAccount account = savingsAccountRepository.findById(transferInfo.getDestinationId())
+                .orElseThrow(EntityNotFoundException::new);
+        account.recieve(transferInfo.getValue());
+        savingsAccountRepository.save(account);
     }
 }

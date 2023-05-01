@@ -23,7 +23,7 @@ public class TransferInfo {
 
     @NotNull
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    private AccountType accountType;
+    private AccountType destinationAccountType;
 
     @NotNull
     @DecimalMin("0.0")
