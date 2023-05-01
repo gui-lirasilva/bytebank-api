@@ -13,19 +13,19 @@ import java.math.BigDecimal;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AccountSimpleDto {
+public class SimpleAccountDto {
 
     private Long id;
     private Long clientId;
     private BigDecimal balance;
 
-    public AccountSimpleDto(SavingsAccount account) {
+    public SimpleAccountDto(SavingsAccount account) {
         this.id = account.getId();
         this.clientId = account.getClient().getId();
         this.balance = account.getBalance();
     }
 
-    public AccountSimpleDto(CheckingAccount account) {
+    public SimpleAccountDto(CheckingAccount account) {
         this.id = account.getId();
         this.clientId = account.getClient().getId();
         this.balance = account.getBalance();

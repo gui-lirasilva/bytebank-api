@@ -5,7 +5,7 @@ import br.com.byteBank.account.TransferInfo;
 import br.com.byteBank.account.checkingAccount.CheckingAccount;
 import br.com.byteBank.account.checkingAccount.CheckingAccountRepository;
 import br.com.byteBank.account.savingsAccount.dto.SavingsAccountFormDto;
-import br.com.byteBank.account.AccountSimpleDto;
+import br.com.byteBank.account.SimpleAccountDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,22 +22,22 @@ public class SavingsAccountService {
     private final SavingsAccountRepository savingsAccountRepository;
     private final CheckingAccountRepository checkingAccountRepository;
 
-    public List<AccountSimpleDto> listAllSavingsAccounts(Pageable pageable) {
-        return savingsAccountRepository.findAll(pageable).stream().map(AccountSimpleDto::new).toList();
+    public List<SimpleAccountDto> listAllSavingsAccounts(Pageable pageable) {
+        return savingsAccountRepository.findAll(pageable).stream().map(SimpleAccountDto::new).toList();
     }
 
     @Transactional
-    public AccountSimpleDto create(SavingsAccountFormDto formDto) {
+    public SimpleAccountDto create(SavingsAccountFormDto formDto) {
         SavingsAccount savingsAccount = savingsAccountRepository.save(formDto.toEntity());
-        return new AccountSimpleDto(savingsAccount);
+        return new SimpleAccountDto(savingsAccount);
     }
 
     @Transactional
-    public AccountSimpleDto updateAccount(Long id, SavingsAccountFormDto formDto) {
+    public SimpleAccountDto updateAccount(Long id, SavingsAccountFormDto formDto) {
         SavingsAccount savingsAccount = savingsAccountRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         savingsAccount.update(formDto);
         savingsAccountRepository.save(savingsAccount);
-        return new AccountSimpleDto(savingsAccount);
+        return new SimpleAccountDto(savingsAccount);
     }
 
     @Transactional

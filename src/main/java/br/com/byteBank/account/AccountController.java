@@ -21,15 +21,15 @@ public class AccountController {
     private final SavingsAccountService savingsAccountService;
 
     @PutMapping("/deposit")
-    public ResponseEntity<AccountSimpleDto> deposit(@RequestBody @Valid TransferInfo transferInfo) {
+    public ResponseEntity<SimpleAccountDto> deposit(@RequestBody @Valid TransferInfo transferInfo) {
         if(transferInfo.getDestinationAccountType().equals(AccountType.CHECKING)) {
             checkingAccountService.deposit(transferInfo);
-            AccountSimpleDto simpleDto = new AccountSimpleDto(checkingAccountService.findAccountById(transferInfo.getDestinationId())
+            SimpleAccountDto simpleDto = new SimpleAccountDto(checkingAccountService.findAccountById(transferInfo.getDestinationId())
                     .orElseThrow(EntityNotFoundException::new));
             return ResponseEntity.ok(simpleDto);
         }
         savingsAccountService.deposit(transferInfo);
-        AccountSimpleDto simpleDto = new AccountSimpleDto(savingsAccountService.findAccountById(transferInfo.getDestinationId())
+        SimpleAccountDto simpleDto = new SimpleAccountDto(savingsAccountService.findAccountById(transferInfo.getDestinationId())
                 .orElseThrow(EntityNotFoundException::new));
         return ResponseEntity.ok(simpleDto);
     }

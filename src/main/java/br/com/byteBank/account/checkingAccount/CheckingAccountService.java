@@ -1,6 +1,6 @@
 package br.com.byteBank.account.checkingAccount;
 
-import br.com.byteBank.account.AccountSimpleDto;
+import br.com.byteBank.account.SimpleAccountDto;
 import br.com.byteBank.account.AccountType;
 import br.com.byteBank.account.TransferInfo;
 import br.com.byteBank.account.checkingAccount.dto.CheckingAccountFormDto;
@@ -22,22 +22,22 @@ public class CheckingAccountService {
     private final CheckingAccountRepository checkingAccountRepository;
     private final SavingsAccountRepository savingsAccountRepository;
 
-    public List<AccountSimpleDto> listAllCheckingAccounts(Pageable pageable) {
-        return checkingAccountRepository.findAll(pageable).stream().map(AccountSimpleDto::new).toList();
+    public List<SimpleAccountDto> listAllCheckingAccounts(Pageable pageable) {
+        return checkingAccountRepository.findAll(pageable).stream().map(SimpleAccountDto::new).toList();
     }
 
     @Transactional
-    public AccountSimpleDto create(CheckingAccountFormDto formDto) {
+    public SimpleAccountDto create(CheckingAccountFormDto formDto) {
         CheckingAccount checkingAccount = checkingAccountRepository.save(formDto.toEntity());
-        return new AccountSimpleDto(checkingAccount);
+        return new SimpleAccountDto(checkingAccount);
     }
 
     @Transactional
-    public AccountSimpleDto updateAccount(Long id, CheckingAccountFormDto formDto) {
+    public SimpleAccountDto updateAccount(Long id, CheckingAccountFormDto formDto) {
         CheckingAccount checkingAccount = checkingAccountRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         checkingAccount.update(formDto);
         checkingAccountRepository.save(checkingAccount);
-        return new AccountSimpleDto(checkingAccount);
+        return new SimpleAccountDto(checkingAccount);
     }
 
 

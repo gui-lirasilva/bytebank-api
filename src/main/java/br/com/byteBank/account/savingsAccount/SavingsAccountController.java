@@ -4,7 +4,7 @@ import br.com.byteBank.account.AccountType;
 import br.com.byteBank.account.TransferInfo;
 import br.com.byteBank.account.savingsAccount.dto.SavingsAccountDto;
 import br.com.byteBank.account.savingsAccount.dto.SavingsAccountFormDto;
-import br.com.byteBank.account.AccountSimpleDto;
+import br.com.byteBank.account.SimpleAccountDto;
 import br.com.byteBank.client.Client;
 import br.com.byteBank.client.ClientService;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,7 @@ public class SavingsAccountController {
     private final ClientService clientService;
 
     @GetMapping
-    public List<AccountSimpleDto> list(@PageableDefault(size = 10) Pageable pageable){
+    public List<SimpleAccountDto> list(@PageableDefault(size = 10) Pageable pageable){
         return savingsAccountService.listAllSavingsAccounts(pageable);
     }
 
@@ -42,7 +42,7 @@ public class SavingsAccountController {
     }
 
     @PostMapping("/new")
-    public ResponseEntity<AccountSimpleDto> create(@RequestBody @Valid SavingsAccountFormDto formDto,
+    public ResponseEntity<SimpleAccountDto> create(@RequestBody @Valid SavingsAccountFormDto formDto,
                                                    UriComponentsBuilder uriComponentsBuilder) {
         if(clientService.clientNotExists(formDto.getClientId())) {
             throw new IllegalArgumentException("The client not exists");
@@ -52,31 +52,31 @@ public class SavingsAccountController {
         }
         Client client = clientService.findById(formDto.getClientId()).orElseThrow(EntityNotFoundException::new);
         formDto.setClient(client);
-        AccountSimpleDto account = savingsAccountService.create(formDto);
+        SimpleAccountDto account = savingsAccountService.create(formDto);
         URI uri = uriComponentsBuilder.path("/account/savings/{id}").buildAndExpand(account.getId()).toUri();
         return ResponseEntity.created(uri).body(account);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AccountSimpleDto> update(@PathVariable @NotNull @Min(1) Long id,
+    public ResponseEntity<SimpleAccountDto> update(@PathVariable @NotNull @Min(1) Long id,
                                                    @RequestBody @Valid SavingsAccountFormDto formDto) {
         if(clientService.clientNotExists(formDto.getClientId())) {
             throw new IllegalArgumentException("The client not exists");
         }
         Client client = clientService.findById(formDto.getClientId()).orElseThrow(EntityNotFoundException::new);
         formDto.setClient(client);
-        AccountSimpleDto account = savingsAccountService.updateAccount(id, formDto);
+        SimpleAccountDto account = savingsAccountService.updateAccount(id, formDto);
         return ResponseEntity.ok(account);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<AccountSimpleDto> delete(@PathVariable @NotNull @Min(1) Long id) {
+    public ResponseEntity<SimpleAccountDto> delete(@PathVariable @NotNull @Min(1) Long id) {
         savingsAccountService.deleteSavingsAccount(id);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{id}/transfer")
-    public ResponseEntity<AccountSimpleDto> transfer(@PathVariable @NotNull @Min(1) Long id,
+    public ResponseEntity<SimpleAccountDto> transfer(@PathVariable @NotNull @Min(1) Long id,
                                                      @RequestBody @Valid TransferInfo transferInfo) {
         if(savingsAccountService.accountNotExists(id)) {
             throw new IllegalArgumentException("The account not exists");
@@ -91,7 +91,7 @@ public class SavingsAccountController {
         }
 
         savingsAccountService.transfer(id, transferInfo);
-        AccountSimpleDto simpleDto = new AccountSimpleDto(savingsAccount);
+        SimpleAccountDto simpleDto = new SimpleAccountDto(savingsAccount);
         return ResponseEntity.ok(simpleDto);
     }
 }
