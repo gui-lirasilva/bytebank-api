@@ -1,12 +1,11 @@
 package br.com.byteBank.account.savingsAccount;
 
 import br.com.byteBank.account.AccountType;
+import br.com.byteBank.account.SimpleAccountDto;
 import br.com.byteBank.account.TransferInfo;
 import br.com.byteBank.account.checkingAccount.CheckingAccount;
 import br.com.byteBank.account.checkingAccount.CheckingAccountRepository;
 import br.com.byteBank.account.savingsAccount.dto.SavingsAccountFormDto;
-import br.com.byteBank.account.SimpleAccountDto;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,11 +15,15 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class SavingsAccountService {
 
     private final SavingsAccountRepository savingsAccountRepository;
     private final CheckingAccountRepository checkingAccountRepository;
+
+    public SavingsAccountService(SavingsAccountRepository savingsAccountRepository, CheckingAccountRepository checkingAccountRepository) {
+        this.savingsAccountRepository = savingsAccountRepository;
+        this.checkingAccountRepository = checkingAccountRepository;
+    }
 
     public List<SimpleAccountDto> listAllSavingsAccounts(Pageable pageable) {
         return savingsAccountRepository.findAll(pageable).stream().map(SimpleAccountDto::new).toList();

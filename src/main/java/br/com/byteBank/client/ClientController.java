@@ -2,7 +2,6 @@ package br.com.byteBank.client;
 
 import br.com.byteBank.client.dto.ClientDto;
 import br.com.byteBank.client.dto.ClientFormDto;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +16,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/client")
-@RequiredArgsConstructor
 public class ClientController {
 
     private final ClientService clientService;
+
+    public ClientController(ClientService clientService) {
+        this.clientService = clientService;
+    }
 
     @GetMapping
     public List<ClientDto> list(@PageableDefault(size = 10) Pageable pageable) {

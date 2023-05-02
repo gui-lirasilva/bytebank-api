@@ -1,13 +1,12 @@
 package br.com.byteBank.account.savingsAccount;
 
 import br.com.byteBank.account.AccountType;
+import br.com.byteBank.account.SimpleAccountDto;
 import br.com.byteBank.account.TransferInfo;
 import br.com.byteBank.account.savingsAccount.dto.SavingsAccountDto;
 import br.com.byteBank.account.savingsAccount.dto.SavingsAccountFormDto;
-import br.com.byteBank.account.SimpleAccountDto;
 import br.com.byteBank.client.Client;
 import br.com.byteBank.client.ClientService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
@@ -24,14 +23,18 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping("/account/savings")
-@RequiredArgsConstructor
 public class SavingsAccountController {
 
     private final SavingsAccountService savingsAccountService;
     private final ClientService clientService;
 
+    public SavingsAccountController(SavingsAccountService savingsAccountService, ClientService clientService) {
+        this.savingsAccountService = savingsAccountService;
+        this.clientService = clientService;
+    }
+
     @GetMapping
-    public List<SimpleAccountDto> list(@PageableDefault(size = 10) Pageable pageable){
+    public List<SimpleAccountDto> list(@PageableDefault(size = 10) Pageable pageable) {
         return savingsAccountService.listAllSavingsAccounts(pageable);
     }
 
@@ -44,7 +47,7 @@ public class SavingsAccountController {
     @PostMapping("/new")
     public ResponseEntity<SimpleAccountDto> create(@RequestBody @Valid SavingsAccountFormDto formDto,
                                                    UriComponentsBuilder uriComponentsBuilder) {
-        if(clientService.clientNotExists(formDto.getClientId())) {
+        if (clientService.clientNotExists(formDto.getClientId())) {
             throw new IllegalArgumentException("The client not exists");
         }
         if (clientService.findSavingsAccount(formDto.getClientId()).isPresent()) {
@@ -60,7 +63,7 @@ public class SavingsAccountController {
     @PutMapping("/{id}")
     public ResponseEntity<SimpleAccountDto> update(@PathVariable @NotNull @Min(1) Long id,
                                                    @RequestBody @Valid SavingsAccountFormDto formDto) {
-        if(clientService.clientNotExists(formDto.getClientId())) {
+        if (clientService.clientNotExists(formDto.getClientId())) {
             throw new IllegalArgumentException("The client not exists");
         }
         Client client = clientService.findById(formDto.getClientId()).orElseThrow(EntityNotFoundException::new);
@@ -78,14 +81,14 @@ public class SavingsAccountController {
     @PostMapping("/{id}/transfer")
     public ResponseEntity<SimpleAccountDto> transfer(@PathVariable @NotNull @Min(1) Long id,
                                                      @RequestBody @Valid TransferInfo transferInfo) {
-        if(savingsAccountService.accountNotExists(id)) {
+        if (savingsAccountService.accountNotExists(id)) {
             throw new IllegalArgumentException("The account not exists");
         }
 
         SavingsAccount savingsAccount = savingsAccountService.findAccountById(id).get();
 
-        if(transferInfo.getDestinationAccountType() == AccountType.SAVINGS) {
-            if(Objects.equals(savingsAccount.getId(), transferInfo.getDestinationId())) {
+        if (transferInfo.getDestinationAccountType() == AccountType.SAVINGS) {
+            if (Objects.equals(savingsAccount.getId(), transferInfo.getDestinationId())) {
                 throw new IllegalArgumentException("Illegal transaction for same account");
             }
         }

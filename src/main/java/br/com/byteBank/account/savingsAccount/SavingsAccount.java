@@ -3,17 +3,11 @@ package br.com.byteBank.account.savingsAccount;
 import br.com.byteBank.account.Account;
 import br.com.byteBank.account.savingsAccount.dto.SavingsAccountFormDto;
 import br.com.byteBank.client.Client;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
 public class SavingsAccount extends Account {
 
@@ -34,9 +28,18 @@ public class SavingsAccount extends Account {
         this.balance = balance;
     }
 
+    public SavingsAccount(Long id, @NotNull Client client, BigDecimal balance) {
+        this.id = id;
+        this.client = client;
+        this.balance = balance;
+    }
+
+    public SavingsAccount() {
+    }
+
     @Override
     public void transfer(BigDecimal value, Account account) {
-        if(balance.doubleValue() < value.doubleValue()) {
+        if (balance.doubleValue() < value.doubleValue()) {
             throw new IllegalArgumentException();
         }
         balance = balance.subtract(value.add(BigDecimal.valueOf(1.0)));
@@ -51,5 +54,17 @@ public class SavingsAccount extends Account {
     public void update(SavingsAccountFormDto formDto) {
         this.balance = formDto.getBalance();
         this.client = formDto.getClient();
+    }
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public @NotNull Client getClient() {
+        return this.client;
+    }
+
+    public BigDecimal getBalance() {
+        return this.balance;
     }
 }

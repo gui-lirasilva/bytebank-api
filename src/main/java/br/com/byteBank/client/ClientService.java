@@ -4,7 +4,6 @@ import br.com.byteBank.account.checkingAccount.CheckingAccount;
 import br.com.byteBank.account.savingsAccount.SavingsAccount;
 import br.com.byteBank.client.dto.ClientDto;
 import br.com.byteBank.client.dto.ClientFormDto;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,10 +13,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class ClientService {
 
     private final ClientRepository clientRepository;
+
+    public ClientService(ClientRepository clientRepository) {
+        this.clientRepository = clientRepository;
+    }
 
     public List<ClientDto> listAllClients(Pageable pageable) {
         return clientRepository.findAll(pageable).stream().map(ClientDto::new).toList();
@@ -25,7 +27,7 @@ public class ClientService {
 
     @Transactional
     public ClientDto create(ClientFormDto formDto) {
-        if(clientRepository.findByCpf(formDto.getCpf()).isPresent()) {
+        if (clientRepository.findByCpf(formDto.getCpf()).isPresent()) {
             throw new IllegalArgumentException("The cpf has already utilized");
         }
         Client client = clientRepository.save(formDto.toEntity());
